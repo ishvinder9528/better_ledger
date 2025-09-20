@@ -155,7 +155,7 @@ export default function CustomerProfile({
             </Card>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
             <StatCard title="Total Invoiced" value={stats.totalInvoiced} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
             <StatCard title="Total Paid" value={stats.totalPaid} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
             <StatCard title="Total Refunded" value={stats.totalRefunded} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
@@ -164,7 +164,7 @@ export default function CustomerProfile({
                 title="Balance" 
                 value={stats.balance} 
                 icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
-                className={cn(stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
+                className={cn('col-span-2 lg:col-span-1', stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
             />
         </div>
 
