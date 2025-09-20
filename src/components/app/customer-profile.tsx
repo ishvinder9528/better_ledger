@@ -1,19 +1,20 @@
 "use client";
 
 import type { Customer, FinancialRecord } from "@/lib/types";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { getSummary } from "@/app/actions";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Mail, MoreVertical, Phone, Sparkles, Trash2, User } from "lucide-react";
+import { Mail, MoreVertical, Phone, Sparkles, Trash2, User, ArrowDownCircle, ArrowUpCircle, CircleDollarSign, FileText } from "lucide-react";
 import { RecordsDataTable } from "./records-data-table";
 import { AddCustomerForm } from "./add-customer-form";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
+import { cn } from "@/lib/utils";
 
 type CustomerProfileProps = {
   customer: Customer;
@@ -25,6 +26,26 @@ type CustomerProfileProps = {
   onDeleteRecord: (id: string) => void;
   onSetRecords: (records: FinancialRecord[]) => void;
 };
+
+const StatCard = ({ title, value, icon, className }: { title: string; value: number; icon: React.ReactNode, className?: string }) => {
+    const formattedValue = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+    }).format(value);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                {icon}
+            </CardHeader>
+            <CardContent>
+                <div className={cn("text-2xl font-bold", className)}>{formattedValue}</div>
+            </CardContent>
+        </Card>
+    );
+};
+
 
 export default function CustomerProfile({
   customer,
@@ -45,6 +66,20 @@ export default function CustomerProfile({
       setSummary(result);
     });
   };
+
+  const stats = useMemo(() => {
+    return records.reduce((acc, record) => {
+      acc.total += record.amount;
+      acc[record.type] += Math.abs(record.amount);
+      return acc;
+    }, {
+      invoice: 0,
+      payment: 0,
+      refund: 0,
+      credit: 0,
+      total: 0,
+    });
+  }, [records]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -106,6 +141,19 @@ export default function CustomerProfile({
                 </CardContent>
             </Card>
         )}
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <StatCard title="Total Invoiced" value={stats.invoice} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Paid" value={stats.payment} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Refunded" value={stats.refund} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Credited" value={stats.credit} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard 
+                title="Balance" 
+                value={stats.total} 
+                icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
+                className={cn(stats.total < 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
+            />
+        </div>
 
         <RecordsDataTable
             records={records}
