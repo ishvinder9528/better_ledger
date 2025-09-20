@@ -139,7 +139,7 @@ export default function Home() {
           {selectedCustomer ? (
             <CustomerProfile
               key={selectedCustomer.id}
-              customer={customer}
+              customer={selectedCustomer}
               records={records}
               onUpdateCustomer={handleUpdateCustomer}
               onDeleteCustomer={handleDeleteCustomer}
