@@ -12,6 +12,8 @@ import { RecordsDataTable } from "./records-data-table";
 import { AddCustomerForm } from "./add-customer-form";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarTrigger } from "../ui/sidebar";
+import { Separator } from "../ui/separator";
 
 type CustomerProfileProps = {
   customer: Customer;
@@ -46,21 +48,24 @@ export default function CustomerProfile({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <header className="bg-card border-b p-4 flex items-center justify-between gap-4">
+      <header className="bg-card border-b p-4 flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
-            <div className="p-2 bg-muted rounded-full">
+            <div className="md:hidden">
+              <SidebarTrigger />
+            </div>
+            <div className="p-2.5 bg-muted rounded-full">
                 <User className="h-6 w-6" />
             </div>
             <div>
                 <h2 className="text-xl font-semibold">{customer.name}</h2>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
                     <span className="flex items-center gap-1.5"><Mail className="h-3 w-3"/>{customer.email}</span>
                     <span className="flex items-center gap-1.5"><Phone className="h-3 w-3"/>{customer.phone}</span>
                 </div>
             </div>
         </div>
-        <div className="flex items-center gap-2">
-            <Button onClick={handleGenerateSummary} disabled={isPending} variant="outline">
+        <div className="flex items-center gap-2 ml-auto md:ml-0">
+            <Button onClick={handleGenerateSummary} disabled={isPending || records.length === 0} variant="outline">
                 <Sparkles className="mr-2 h-4 w-4" />
                 {isPending ? "Generating..." : "Generate Summary"}
             </Button>
@@ -74,8 +79,9 @@ export default function CustomerProfile({
                     <AddCustomerForm customer={customer} onSave={onUpdateCustomer}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Customer</DropdownMenuItem>
                     </AddCustomerForm>
+                    <Separator />
                     <DeleteConfirmationDialog onConfirm={() => onDeleteCustomer(customer.id)}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Customer
                         </DropdownMenuItem>
                     </DeleteConfirmationDialog>
@@ -90,7 +96,7 @@ export default function CustomerProfile({
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="text-accent"/>
+                        <Sparkles className="text-primary"/>
                         AI-Powered Summary
                     </CardTitle>
                     <CardDescription>An AI-generated overview of this customer's financial activity.</CardDescription>
