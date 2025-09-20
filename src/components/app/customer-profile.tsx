@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "../ui/scroll-area";
 
 type CustomerProfileProps = {
   customer: Customer;
@@ -34,13 +35,13 @@ const StatCard = ({ title, value, icon, className }: { title: string; value: num
     }).format(value);
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Card className="min-w-[160px]">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-2">
+                <CardTitle className="text-xs font-medium">{title}</CardTitle>
                 {icon}
             </CardHeader>
-            <CardContent>
-                <div className={cn("text-2xl font-bold", className)}>{formattedValue}</div>
+            <CardContent className="p-3 pt-0">
+                <div className={cn("text-lg font-bold", className)}>{formattedValue}</div>
             </CardContent>
         </Card>
     );
@@ -155,17 +156,30 @@ export default function CustomerProfile({
             </Card>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-5">
-            <StatCard title="Total Invoiced" value={stats.totalInvoiced} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Paid" value={stats.totalPaid} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Refunded" value={stats.totalRefunded} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Credited" value={stats.totalCredited} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard 
-                title="Balance" 
-                value={stats.balance} 
-                icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
-                className={cn('sm:col-span-2 lg:col-span-1', stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
-            />
+        <div className="lg:grid lg:grid-cols-5 lg:gap-4">
+            <ScrollArea className="sm:hidden whitespace-nowrap rounded-md">
+                 <div className="flex w-max space-x-2 pb-2">
+                    <StatCard title="Balance" value={stats.balance} icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
+                        className={cn(stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
+                    />
+                    <StatCard title="Total Invoiced" value={stats.totalInvoiced} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
+                    <StatCard title="Total Paid" value={stats.totalPaid} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+                    <StatCard title="Total Refunded" value={stats.totalRefunded} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
+                    <StatCard title="Total Credited" value={stats.totalCredited} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+                </div>
+            </ScrollArea>
+             <div className="hidden sm:grid sm:grid-cols-5 sm:gap-4">
+                <StatCard title="Total Invoiced" value={stats.totalInvoiced} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
+                <StatCard title="Total Paid" value={stats.totalPaid} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+                <StatCard title="Total Refunded" value={stats.totalRefunded} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
+                <StatCard title="Total Credited" value={stats.totalCredited} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+                <StatCard 
+                    title="Balance" 
+                    value={stats.balance} 
+                    icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
+                    className={cn('sm:col-span-2 lg:col-span-1', stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
+                />
+            </div>
         </div>
 
         <RecordsDataTable
