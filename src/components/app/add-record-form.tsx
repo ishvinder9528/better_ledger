@@ -41,7 +41,7 @@ const formSchema = z.object({
     message: "Amount cannot be zero.",
   }),
   type: z.enum(["invoice", "payment", "refund", "credit"]),
-  description: z.string().min(2, "Description must be at least 2 characters."),
+  description: z.string(),
 });
 
 type AddRecordFormProps = {
@@ -105,7 +105,7 @@ export function AddRecordForm({ record, customerId, onSave, children }: AddRecor
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                    <Input type="number" step="10" placeholder="0" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

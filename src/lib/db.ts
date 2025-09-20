@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import type { Customer, FinancialRecord } from './types';
+import { initialCustomers, initialRecords } from './data';
 
 const dbPath = path.join(process.cwd(), 'ledger.db');
 const dbExists = fs.existsSync(dbPath);
@@ -11,8 +12,42 @@ const db = new Database(dbPath);
 if (!dbExists) {
   console.log("Database not found. Initializing...");
   try {
-    const initSql = fs.readFileSync(path.join(process.cwd(), 'src', 'lib', 'init.sql'), 'utf8');
-    db.exec(initSql);
+    // Create tables
+    db.exec(`
+      CREATE TABLE customers (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        email TEXT,
+        phone TEXT
+      );
+    `);
+    db.exec(`
+      CREATE TABLE financial_records (
+        id TEXT PRIMARY KEY,
+        customerId TEXT,
+        date TEXT,
+        amount REAL,
+        type TEXT,
+        description TEXT,
+        FOREIGN KEY (customerId) REFERENCES customers(id)
+      );
+    `);
+    
+    // Seed data
+    const insertCustomer = db.prepare('INSERT INTO customers (id, name, email, phone) VALUES (?, ?, ?, ?)');
+    const insertRecord = db.prepare('INSERT INTO financial_records (id, customerId, date, amount, type, description) VALUES (?, ?, ?, ?, ?, ?)');
+    
+    const insertManyCustomers = db.transaction((customers) => {
+      for (const customer of customers) insertCustomer.run(customer.id, customer.name, customer.email, customer.phone);
+    });
+    
+    const insertManyRecords = db.transaction((records) => {
+      for (const record of records) insertRecord.run(record.id, record.customerId, record.date, record.amount, record.type, record.description);
+    });
+
+    insertManyCustomers(initialCustomers);
+    insertManyRecords(initialRecords);
+
     console.log("Database initialized successfully.");
   } catch (error) {
     console.error("Failed to initialize database:", error);
@@ -21,7 +56,7 @@ if (!dbExists) {
 
 // Customer Functions
 export function getCustomers(): Customer[] {
-  return db.prepare('SELECT * FROM customers').all() as Customer[];
+  return db.prepare('SELECT * FROM customers ORDER BY name ASC').all() as Customer[];
 }
 
 export function getCustomerById(id: string): Customer | null {
@@ -30,10 +65,10 @@ export function getCustomerById(id: string): Customer | null {
 }
 
 export function addCustomer(customer: Omit<Customer, 'id'>): Customer {
-  const id = `C${Date.now()}`;
+  const newId = `C${String(Date.now())}${Math.floor(Math.random() * 100)}`;
   db.prepare('INSERT INTO customers (id, name, email, phone) VALUES (?, ?, ?, ?)')
-    .run(id, customer.name, customer.email, customer.phone);
-  return { id, ...customer };
+    .run(newId, customer.name, customer.email, customer.phone);
+  return { id: newId, ...customer };
 }
 
 export function updateCustomer(customer: Customer): Customer {
@@ -54,10 +89,10 @@ export function getRecords(customerId: string): FinancialRecord[] {
 }
 
 export function addRecord(record: Omit<FinancialRecord, 'id'>): FinancialRecord {
-  const id = `R${Date.now()}`;
+  const newId = `R${String(Date.now())}${Math.floor(Math.random() * 100)}`;
   db.prepare('INSERT INTO financial_records (id, customerId, date, amount, type, description) VALUES (?, ?, ?, ?, ?, ?)')
-    .run(id, record.customerId, record.date, record.amount, record.type, record.description);
-  return { id, ...record };
+    .run(newId, record.customerId, record.date, record.amount, record.type, record.description);
+  return { id: newId, ...record };
 }
 
 export function updateRecord(record: FinancialRecord): FinancialRecord {

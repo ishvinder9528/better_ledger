@@ -27,8 +27,8 @@ import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Invalid email address."),
-  phone: z.string().min(10, "Phone number seems too short."),
+  email: z.string(),
+  phone: z.string(),
 });
 
 type AddCustomerFormProps = {
