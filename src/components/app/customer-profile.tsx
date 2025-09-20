@@ -69,15 +69,31 @@ export default function CustomerProfile({
 
   const stats = useMemo(() => {
     return records.reduce((acc, record) => {
-      acc.total += record.amount;
-      acc[record.type] += Math.abs(record.amount);
+      switch (record.type) {
+        case 'invoice':
+          acc.totalInvoiced += record.amount;
+          acc.balance += record.amount;
+          break;
+        case 'payment':
+          acc.totalPaid += Math.abs(record.amount);
+          acc.balance += record.amount; // amount is negative
+          break;
+        case 'refund':
+          acc.totalRefunded += record.amount;
+          acc.balance += record.amount; // amount is positive, increases what they owe
+          break;
+        case 'credit':
+           acc.totalCredited += Math.abs(record.amount);
+           acc.balance += record.amount; // amount is negative
+          break;
+      }
       return acc;
     }, {
-      invoice: 0,
-      payment: 0,
-      refund: 0,
-      credit: 0,
-      total: 0,
+      totalInvoiced: 0,
+      totalPaid: 0,
+      totalRefunded: 0,
+      totalCredited: 0,
+      balance: 0,
     });
   }, [records]);
 
@@ -143,15 +159,15 @@ export default function CustomerProfile({
         )}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            <StatCard title="Total Invoiced" value={stats.invoice} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Paid" value={stats.payment} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Refunded" value={stats.refund} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
-            <StatCard title="Total Credited" value={stats.credit} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Invoiced" value={stats.totalInvoiced} icon={<FileText className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Paid" value={stats.totalPaid} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Refunded" value={stats.totalRefunded} icon={<ArrowUpCircle className="h-4 w-4 text-muted-foreground" />} />
+            <StatCard title="Total Credited" value={stats.totalCredited} icon={<ArrowDownCircle className="h-4 w-4 text-muted-foreground" />} />
             <StatCard 
                 title="Balance" 
-                value={stats.total} 
+                value={stats.balance} 
                 icon={<CircleDollarSign className="h-4 w-4 text-muted-foreground" />} 
-                className={cn(stats.total < 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
+                className={cn(stats.balance <= 0 ? 'text-green-600 dark:text-green-500' : 'text-destructive')}
             />
         </div>
 
