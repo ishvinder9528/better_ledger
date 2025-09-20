@@ -1,0 +1,105 @@
+import type { Customer, FinancialRecord } from './types';
+
+export const initialCustomers: Customer[] = [
+  {
+    id: 'C001',
+    name: 'Innovate Inc.',
+    email: 'contact@innovate.com',
+    phone: '123-456-7890',
+  },
+  {
+    id: 'C002',
+    name: 'Solutions Co.',
+    email: 'support@solutions.co',
+    phone: '987-654-3210',
+  },
+  {
+    id: 'C003',
+    name: 'Tech Giants LLC',
+    email: 'admin@techgiants.com',
+    phone: '555-123-4567',
+  },
+];
+
+export const initialRecords: FinancialRecord[] = [
+  {
+    id: 'R001',
+    customerId: 'C001',
+    date: '2023-10-01',
+    amount: 1500.0,
+    type: 'invoice',
+    description: 'Q3 Web Development Services',
+  },
+  {
+    id: 'R002',
+    customerId: 'C001',
+    date: '2023-10-15',
+    amount: -1500.0,
+    type: 'payment',
+    description: 'Payment for INV-001',
+  },
+  {
+    id: 'R003',
+    customerId: 'C002',
+    date: '2023-11-05',
+    amount: 3200.5,
+    type: 'invoice',
+    description: 'Cloud Consulting Services',
+  },
+  {
+    id: 'R004',
+    customerId: 'C003',
+    date: '2023-11-10',
+    amount: 5000.0,
+    type: 'invoice',
+    description: 'Software License Renewal',
+  },
+  {
+    id: 'R005',
+    customerId: 'C002',
+    date: '2023-11-20',
+    amount: -3200.5,
+    type: 'payment',
+    description: 'Payment for INV-002',
+  },
+  {
+    id: 'R006',
+    customerId: 'C001',
+    date: '2023-12-01',
+    amount: 1800.0,
+    type: 'invoice',
+    description: 'Q4 Web Development Services',
+  },
+  {
+    id: 'R007',
+    customerId: 'C003',
+    date: '2023-12-12',
+    amount: -2500.0,
+    type: 'payment',
+    description: 'Partial payment for INV-003',
+  },
+  {
+    id: 'R008',
+    customerId: 'C001',
+    date: '2023-12-15',
+    amount: -1800.0,
+    type: 'payment',
+    description: 'Payment for INV-004',
+  },
+  {
+    id: 'R009',
+    customerId: 'C002',
+    date: '2024-01-05',
+    amount: 50.0,
+    type: 'refund',
+    description: 'Credit for service outage',
+  },
+  {
+    id: 'R010',
+    customerId: 'C003',
+    date: '2024-01-20',
+    amount: -2500.0,
+    type: 'payment',
+    description: 'Final payment for INV-003',
+  },
+];
