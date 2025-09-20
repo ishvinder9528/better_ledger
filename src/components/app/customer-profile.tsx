@@ -69,22 +69,19 @@ export default function CustomerProfile({
 
   const stats = useMemo(() => {
     return records.reduce((acc, record) => {
+      acc.balance += record.amount;
       switch (record.type) {
         case 'invoice':
           acc.totalInvoiced += record.amount;
-          acc.balance += record.amount;
           break;
         case 'payment':
           acc.totalPaid += Math.abs(record.amount);
-          acc.balance += record.amount; // amount is negative
           break;
         case 'refund':
           acc.totalRefunded += record.amount;
-          acc.balance += record.amount; // amount is positive, increases what they owe
           break;
         case 'credit':
            acc.totalCredited += Math.abs(record.amount);
-           acc.balance += record.amount; // amount is negative
           break;
       }
       return acc;

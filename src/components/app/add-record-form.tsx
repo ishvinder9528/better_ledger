@@ -56,7 +56,7 @@ export function AddRecordForm({ record, customerId, onSave, children }: AddRecor
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: record
-      ? { ...record, amount: record.amount.toString() }
+      ? { ...record, amount: Math.abs(record.amount) } // Show positive amount in form
       : {
           date: new Date().toISOString().split("T")[0],
           amount: 0,
@@ -66,13 +66,25 @@ export function AddRecordForm({ record, customerId, onSave, children }: AddRecor
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const recordData = { ...values, customerId };
+    // Ensure payments and credits are stored as negative numbers
+    let finalAmount = Math.abs(values.amount);
+    if (values.type === 'payment' || values.type === 'credit') {
+      finalAmount = -finalAmount;
+    }
+
+    const recordData = { ...values, amount: finalAmount, customerId };
+    
     if (record) {
       onSave({ ...record, ...recordData });
     } else {
       onSave(recordData);
     }
-    form.reset();
+    form.reset({
+        date: new Date().toISOString().split("T")[0],
+        amount: 0,
+        type: "invoice",
+        description: "",
+    });
     setOpen(false);
   }
 
